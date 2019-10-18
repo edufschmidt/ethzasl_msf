@@ -16,8 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef POSITION_MEASUREMENTMANAGER_H
-#define POSITION_MEASUREMENTMANAGER_H
+#ifndef POSITION_VELOCITY_MEASUREMENTMANAGER_H
+#define POSITION_VELOCITY_MEASUREMENTMANAGER_H
 
 #include <ros/ros.h>
 
@@ -27,43 +27,50 @@
 #include "msf_statedef.hpp"
 #include <msf_updates/position_sensor_handler/position_sensorhandler.h>
 #include <msf_updates/position_sensor_handler/position_measurement.h>
-#include <msf_updates/SinglePositionSensorConfig.h>
+#include <msf_updates/velocity_sensor_handler/velocity_sensorhandler.h>
+#include <msf_updates/PositionVelocitySensorConfig.h>
 
-namespace msf_position_sensor {
 
-typedef msf_updates::SinglePositionSensorConfig Config_T;
+namespace msf_position_velocity_sensor {
+
+typedef msf_updates::PositionVelocitySensorConfig Config_T;
 typedef dynamic_reconfigure::Server<Config_T> ReconfigureServer;
 typedef shared_ptr<ReconfigureServer> ReconfigureServerPtr;
 
-class PositionSensorManager : public msf_core::MSF_SensorManagerROS<
+class PositionVelocitySensorManager : public msf_core::MSF_SensorManagerROS<
     msf_updates::EKFState> {
-  typedef PositionSensorHandler<
+  typedef msf_position_sensor::PositionSensorHandler<
       msf_updates::position_measurement::PositionMeasurement,
-      PositionSensorManager> PositionSensorHandler_T;
-  friend class PositionSensorHandler<
+      PositionVelocitySensorManager> PositionSensorHandler_T;
+  friend class msf_position_sensor::PositionSensorHandler<
       msf_updates::position_measurement::PositionMeasurement,
-      PositionSensorManager> ;
+      PositionVelocitySensorManager> ;
  public:
   typedef msf_updates::EKFState EKFState_T;
   typedef EKFState_T::StateSequence_T StateSequence_T;
   typedef EKFState_T::StateDefinition_T StateDefinition_T;
 
-  PositionSensorManager(
-      ros::NodeHandle pnh = ros::NodeHandle("~/position_sensor")) {
+  PositionVelocitySensorManager(
+      ros::NodeHandle pnh = ros::NodeHandle("~/position_velocity_sensor")) {
     imu_handler_.reset(
         new msf_core::IMUHandler_ROS<msf_updates::EKFState>(*this, "msf_core",
                                                             "imu_handler"));
 
     position_handler_.reset(
-        new PositionSensorHandler_T(*this, "", "position_sensor"));
+        new PositionSensorHandler_T(*this, "", "position_velocity_sensor"));
     AddHandler(position_handler_);
+
+    velocity_handler_.reset(
+        new msf_velocity_sensor::VelocitySensorHandler(*this, "",
+                                                       "velocity_sensor"));
+    AddHandler(velocity_handler_);
 
     reconf_server_.reset(new ReconfigureServer(pnh));
     ReconfigureServer::CallbackType f = boost::bind(
-        &PositionSensorManager::Config, this, _1, _2);
+        &PositionVelocitySensorManager::Config, this, _1, _2);
     reconf_server_->setCallback(f);
   }
-  virtual ~PositionSensorManager() {
+  virtual ~PositionVelocitySensorManager() {
   }
 
   virtual const Config_T& Getcfg() {
@@ -73,6 +80,8 @@ class PositionSensorManager : public msf_core::MSF_SensorManagerROS<
  private:
   shared_ptr<msf_core::IMUHandler_ROS<msf_updates::EKFState> > imu_handler_;
   shared_ptr<PositionSensorHandler_T> position_handler_;
+  shared_ptr<msf_velocity_sensor::VelocitySensorHandler> velocity_handler_;
+
 
   Config_T config_;
   ReconfigureServerPtr reconf_server_;
@@ -84,12 +93,14 @@ class PositionSensorManager : public msf_core::MSF_SensorManagerROS<
     config_ = config;
     position_handler_->SetNoises(config.position_noise_meas);
     position_handler_->SetDelay(config.position_delay);
-    if ((level & msf_updates::SinglePositionSensor_INIT_FILTER)
+    velocity_handler_->SetNoises(config.press_noise_meas_v);
+
+    if ((level & msf_updates::PositionVelocitySensor_INIT_FILTER)
         && config.core_init_filter == true) {
       Init(1.0);
       config.core_init_filter = false;
     }
-  }
+ }
 
   void Init(double scale) const {
     if (scale < 0.001) {
@@ -202,4 +213,4 @@ class PositionSensorManager : public msf_core::MSF_SensorManagerROS<
   }
 };
 }
-#endif  // POSITION_MEASUREMENTMANAGER_H
+#endif  // POSITION_VELOCITY_MEASUREMENTMANAGER_H

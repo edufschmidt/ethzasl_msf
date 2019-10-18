@@ -1,3 +1,4 @@
+<!--launch file-->
 <launch>
 
   <!-- This node updates the 'position_yaw_init' parameter of a target MSF sensor node using yaw information received from an external topic. Various forms of yaw topic inputs are available (see below).

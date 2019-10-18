@@ -1,3 +1,4 @@
+<!--launch file-->
 <launch>
     <node name="msf_viconpos_sensor" pkg="msf_updates" type="pose_sensor" clear_params="true" output="screen">
 
