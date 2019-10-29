@@ -5,8 +5,8 @@
             <remap from="msf_core/correction" to="/auk/fcu/ekf_state_in"/>-->
 
 	    <!--<remap from="msf_updates/position_input" to="/leica/position" />-->
-	    <remap from="msf_updates/navsatfix_input" to="drone6/dji_sdk/rtk_position" />
-			<remap from="msf_core/imu_state_input" to="drone6/dji_sdk/imu" />	    	
+	    <remap from="msf_updates/navsatfix_input" to="/drone6/dji_sdk/gps_position" />
+			<remap from="msf_core/imu_state_input" to="/drone6/dji_sdk/imu" />	    	
 
       <!--remap from="msf_updates/transform_input" to="vicon/auk/auk" /--> 
 

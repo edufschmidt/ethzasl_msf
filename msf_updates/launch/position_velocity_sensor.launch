@@ -7,8 +7,8 @@
 	    <!--<remap from="msf_updates/position_input" to="/leica/position" />-->
 	    <remap from="msf_updates/navsatfix_input" to="drone6/dji_sdk/rtk_position" />
 			<remap from="msf_core/imu_state_input" to="drone6/dji_sdk/imu" />	    	
-		  <remap from="/velocity" to="velocity" />	    	
-      <rosparam file="$(find msf_updates)/position_sensor_fix.yaml"/>
+		  <remap from="/velocity" to="/velocity" />	    	
+      <rosparam file="$(find msf_updates)/pose_velocity_sensor.yaml"/>
     </node>
 </launch>
 

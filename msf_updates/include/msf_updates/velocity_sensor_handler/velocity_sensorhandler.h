@@ -30,7 +30,7 @@ class VelocitySensorHandler : public msf_core::SensorHandler<
     typename msf_updates::EKFState> {
  private:
 
-  Eigen::Matrix<double, 2, 1> z_v_;   ///< velocity measurement.
+  Eigen::Matrix<double, 3, 1> z_v_;   ///< velocity measurement.
   double n_zv_;  ///< velocity measurement noise.
   ros::Subscriber subVelocity_;
   void MeasurementCallback(const geometry_msgs::PointStampedConstPtr & msg);
@@ -39,7 +39,7 @@ class VelocitySensorHandler : public msf_core::SensorHandler<
       msf_core::MSF_SensorManager<msf_updates::EKFState>& meas,
       std::string topic_namespace, std::string parameternamespace);
   // Used for the init.
-  Eigen::Matrix<double, 2, 1> GetVelocityMeasurement() {
+  Eigen::Matrix<double, 3, 1> GetVelocityMeasurement() {
     return z_v_;
   }
   // Setters for configure values.

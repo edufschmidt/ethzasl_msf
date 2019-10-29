@@ -8,10 +8,10 @@
 
     <!-- Inputs -->
     <!-- Specify name of node running MSF -->
-    <param name="msf_sensor_node" type="string" value="msf_gps_pose_estimator/position_sensor" />
+    <param name="msf_position_velocity_filter" type="string" value="msf_position_velocity_filter/position_velocity_sensor" />
 
     <!-- Specify topic to obtain heading from (use one) -->
-    <remap from="imu" to="imu" />
+    <remap from="imu" to="/drone6/dji_sdk/imu" />
     <!-- remap from="heading_radians" to="heading" / -->
     <!-- remap from="orientation_quaternion" to="fcu/imu/orientation" / -->
     <!-- remap from="orientation_degrees" to="orientation_euler_estimated_odometry_degrees" / -->

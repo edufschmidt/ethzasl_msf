@@ -25,7 +25,7 @@
 
 namespace velocity_measurement {
 enum {
-    nMeasurements = 2
+    nMeasurements = 3
 };
 /**
  * \brief A measurement as provided by a velocity sensor.
@@ -47,6 +47,7 @@ private:
         // Get measurements.
         z_v_(0) = msg->point.x; // vx
         z_v_(1) = msg->point.y; // vy
+        z_v_(2) = msg->point.z;
 
         const double s_zv = n_zv_ * n_zv_;
         R_ = (Eigen::Matrix<double, nMeasurements, 1>() << s_zv).finished()
@@ -55,7 +56,7 @@ private:
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    Eigen::Matrix<double, 2, 1> z_v_;  /// Velocity measurement.
+    Eigen::Matrix<double, 3, 1> z_v_;  /// Velocity measurement.
     double n_zv_;  /// Velocity measurement noise.
 
     typedef msf_updates::EKFState EKFState_T;
@@ -100,12 +101,16 @@ public:
         H_old.block<1, 1>(0, idx_v)(0) = 1;  // v_x
         // Vy
         H_old.block<1, 1>(1, idx_v + 1)(0) = 1;  // v_y
+        //Vz
+        H_old.block<1, 1>(2, idx_v + 2)(0) = 1;  // v_z
 
-        std::cout << "state V " << state.Get<StateDefinition_T::v>() << std::endl;
+
+        //std::cout << "state V " << state.Get<StateDefinition_T::v>() << std::endl;
 
         // Construct residuals
         r_old.block<1, 1>(0, 0)(0) = z_v_(0) - state.Get<StateDefinition_T::v>().block<1, 1>(0, 0)(0);
         r_old.block<1, 1>(1, 0)(0) = z_v_(1) - state.Get<StateDefinition_T::v>().block<1, 1>(1, 0)(0);
+        r_old.block<1, 1>(2, 0)(0) = z_v_(2) - state.Get<StateDefinition_T::v>().block<1, 1>(2, 0)(0);
 
 
         // Call update step in base class.

@@ -15,8 +15,8 @@ heading = 0.0
 is_init_heading = False
 
 # Specify MSF node name parameter from launch file
-client = dynamic_reconfigure.client.Client(rospy.get_param("msf_sensor_node",
-    "msf_gps_pose_estimator/position_sensor"), timeout=30.0)
+client = dynamic_reconfigure.client.Client(rospy.get_param("/msf_position_velocity_filter",
+    "/msf_position_velocity_filter/position_sensor"), timeout=10.0)
 
 def msg_to_quaternion(msg):
         q = [0,0,0,1]
