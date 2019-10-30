@@ -24,6 +24,7 @@ generate_dynamic_reconfigure_options(
 		cfg/PositionVelocitySensor.cfg
     cfg/SphericalPositionSensor.cfg
 		cfg/PoseVelocitySensor.cfg
+		cfg/PoseVelocityAltitudeSensor.cfg
 )
 
 catkin_package(
@@ -43,6 +44,7 @@ else()
 add_subdirectory(src/pose_msf)
 add_subdirectory(src/pose_pressure_msf)
 add_subdirectory(src/pose_velocity_msf)
+add_subdirectory(src/pose_velocity_altitude_msf)
 add_subdirectory(src/position_velocity_msf)
 add_subdirectory(src/position_msf)
 add_subdirectory(src/position_pose_msf)
