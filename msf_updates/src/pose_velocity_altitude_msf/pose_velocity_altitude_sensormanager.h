@@ -24,6 +24,7 @@
 #include "msf_statedef.hpp"
 #include <msf_updates/pose_sensor_handler/pose_sensorhandler.h>
 #include <msf_updates/velocity_sensor_handler/velocity_sensorhandler.h>
+#include <msf_updates/altitude_sensor_handler/altitude_sensorhandler.h>
 #include <msf_updates/pose_sensor_handler/pose_measurement.h>
 #include <msf_updates/PoseVelocityAltitudeSensorConfig.h>
 #include <msf_updates/SinglePoseSensorConfig.h>
@@ -46,7 +47,7 @@ public:
     typedef EKFState_T::StateDefinition_T StateDefinition_T;
 
     PoseVelocityAltitudeSensorManager(
-            ros::NodeHandle pnh = ros::NodeHandle("~/pose_velocity_sensor")) {
+            ros::NodeHandle pnh = ros::NodeHandle("~/pose_velocity_altitude_sensor")) {
         imu_handler_.reset(
                     new msf_core::IMUHandler_ROS<msf_updates::EKFState>(*this, "msf_core",
                                                                         "imu_handler"));
@@ -59,6 +60,11 @@ public:
                     new msf_velocity_sensor::VelocitySensorHandler(*this, "",
                                                                    "velocity_sensor"));
         AddHandler(velocity_handler_);
+
+        altitude_handler_.reset(
+                    new msf_altitude_sensor::AltitudeSensorHandler(*this, "",
+                                                                   "altitude_sensor"));
+        AddHandler(altitude_handler_);
 
         reconf_server_.reset(new ReconfigureServer(pnh));
         ReconfigureServer::CallbackType f = boost::bind(
@@ -77,6 +83,8 @@ private:
     shared_ptr<msf_core::IMUHandler_ROS<msf_updates::EKFState> > imu_handler_;
     shared_ptr<PoseSensorHandler_T> pose_handler_;
     shared_ptr<msf_velocity_sensor::VelocitySensorHandler> velocity_handler_;
+    shared_ptr<msf_altitude_sensor::AltitudeSensorHandler> altitude_handler_;
+
 
     Config_T config_;
     ReconfigureServerPtr reconf_server_;
@@ -110,6 +118,7 @@ private:
         pose_handler_->SetNoises(config.pose_noise_meas_p,
                                  config.pose_noise_meas_q);
         velocity_handler_->SetNoises(config.press_noise_meas_v);
+        altitude_handler_->SetNoises(config.press_noise_meas_v);
     }
 
     void Init(double scale) const {
