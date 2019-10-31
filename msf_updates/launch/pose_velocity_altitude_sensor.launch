@@ -2,7 +2,7 @@
 <launch>
     <node  launch-prefix="gdb -ex run --args" name="msf_pose_velocity_altitude_sensor" pkg="msf_updates" type="pose_velocity_altitude_sensor" clear_params="true" output="screen">
             <!--<remap from="msf_core/hl_state_input" to="/bluebird/fcu/ekf_state_out" />-->
-            <remap from="msf_updates/pose_input" to="/drone6/gps_pose" />
+            <remap from="msf_updates/pose_input" to="/drone6/dji_pose" />
 					 	<remap from="/velocity" to="/velocity" />
 					 	<remap from="/msf_updates/altitude_above_takeoff" to="/altitude_above_takeoff" />	    		    	
             <!--<remap from="msf_updates/pressure_height" to="/bluebird/fcu/pressure_height" />-->
