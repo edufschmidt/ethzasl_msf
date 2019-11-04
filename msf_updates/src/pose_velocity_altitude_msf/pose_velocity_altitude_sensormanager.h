@@ -24,6 +24,7 @@
 #include "msf_statedef.hpp"
 #include <msf_updates/pose_sensor_handler/pose_sensorhandler.h>
 #include <msf_updates/velocity_sensor_handler/velocity_sensorhandler.h>
+#include <msf_updates/attitude_sensor_handler/attitude_sensorhandler.h>
 #include <msf_updates/altitude_sensor_handler/altitude_sensorhandler.h>
 #include <msf_updates/pose_sensor_handler/pose_measurement.h>
 #include <msf_updates/PoseVelocityAltitudeSensorConfig.h>
@@ -66,6 +67,13 @@ public:
                                                                    "altitude_sensor"));
         AddHandler(altitude_handler_);
 
+        attitude_handler_.reset(
+                    new msf_attitude_sensor::AttitudeSensorHandler(*this, "",
+                                                                   "attitude_sensor"));
+        AddHandler(attitude_handler_);
+
+
+
         reconf_server_.reset(new ReconfigureServer(pnh));
         ReconfigureServer::CallbackType f = boost::bind(
                     &PoseVelocityAltitudeSensorManager::Config, this, _1, _2);
@@ -84,6 +92,7 @@ private:
     shared_ptr<PoseSensorHandler_T> pose_handler_;
     shared_ptr<msf_velocity_sensor::VelocitySensorHandler> velocity_handler_;
     shared_ptr<msf_altitude_sensor::AltitudeSensorHandler> altitude_handler_;
+    shared_ptr<msf_attitude_sensor::AttitudeSensorHandler> attitude_handler_;
 
 
     Config_T config_;
@@ -119,6 +128,7 @@ private:
                                  config.pose_noise_meas_q);
         velocity_handler_->SetNoises(config.press_noise_meas_v);
         altitude_handler_->SetNoises(config.press_noise_meas_v);
+        attitude_handler_->SetNoises(1e-6);
     }
 
     void Init(double scale) const {
@@ -172,15 +182,9 @@ private:
             q = (q_ic * q_vc.conjugate() * q_wv).conjugate();
         }
         q.normalize();
-        std::cout << "q final" << q.x() << q.y() << q.z() << q.w() << std::endl;
-        std::cout << "q_ic " << q_ic.x() << q_ic.y() << q_ic.z() << q_ic.w() << std::endl;
-        std::cout << "q_vc " << q_vc.x() << q_vc.y() << q_vc.z() << q_vc.w() << std::endl;
-        std::cout << "q wv " << q_wv.x() << q_wv.y() << q_wv.z() << q_wv.w() << std::endl;
 
         p = q_wv.conjugate().toRotationMatrix() * p_vc / scale
                 - q.toRotationMatrix() * p_ic;
-
-        std::cout << "position " << p << std::endl;
 
         a_m = q.inverse() * g;			/// Initial acceleration.
 
