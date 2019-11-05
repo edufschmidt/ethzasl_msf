@@ -72,6 +72,7 @@ private:
     ros::Publisher pubCovCoreAux_; ///< Publishes the covariance matrix for the cross-correlations between core and auxiliary states.
 
     std::string msf_output_frame_;
+		std::string msf_base_frame_;
 
     mutable tf::TransformBroadcaster tf_broadcaster_;
 
@@ -87,7 +88,8 @@ public:
         reconfServer_->setCallback(f);
 
         pnh.param("data_playback", this->data_playback_, false);
-        pnh.param("msf_output_frame", msf_output_frame_, std::string("world"));
+        pnh.param("msf_output_frame", msf_output_frame_, std::string("odom"));
+        pnh.param("msf_base_frame", msf_base_frame_, std::string("base_link"));
 
         ros::NodeHandle nh("msf_core");
 
@@ -217,8 +219,8 @@ public:
             nav_msgs::Odometry msgOdometry;
             msgOdometry.header.stamp = ros::Time(state->time);
             msgOdometry.header.seq = msg_seq++;
-            msgOdometry.header.frame_id = "odom";//msf_output_frame_;
-            msgOdometry.child_frame_id = "base_link";
+            msgOdometry.header.frame_id = msf_output_frame_;
+            msgOdometry.child_frame_id = msf_base_frame_;
             state->ToOdometryMsg(msgOdometry);
             pubOdometry_.publish(msgOdometry);
 
@@ -360,7 +362,7 @@ public:
             tf_broadcaster_.sendTransform(
                         tf::StampedTransform(
                             transform, ros::Time::now() /*ros::Time(latestState->time_)*/,
-                            msf_output_frame_, "state"));
+                            msf_output_frame_, msf_base_frame_));
         }
 
         if (pubCovCore_.getNumSubscribers()) {
