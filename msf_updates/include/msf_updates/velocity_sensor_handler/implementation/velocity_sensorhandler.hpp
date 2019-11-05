@@ -35,7 +35,7 @@ VelocitySensorHandler::VelocitySensorHandler(
 
     subVelocity_ =
             nh.subscribe<geometry_msgs::PointStamped>
-            ("/velocity", 20, &VelocitySensorHandler::MeasurementCallback, this);
+            ("velocity", 20, &VelocitySensorHandler::MeasurementCallback, this);
 
     //memset(heightbuff, 0, sizeof(double) * heightbuffsize);
 
